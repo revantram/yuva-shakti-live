@@ -68,11 +68,18 @@ jobs:
           ./gradlew assembleDebug --no-daemon || gradle assembleDebug
           cp app/build/outputs/apk/debug/*.apk ../YuvaShaktiGroup.apk || true
 
-      - name: Fallback to Pre-built Signed APK if Gradle is skipped
+      - name: Package & Sign APK with apksigner (v1 + v2 + v3 schemes)
+        run: |
+          python3 scripts/package-apk.py || npm run package-apk
+          if [ -f "public/YuvaShaktiGroup.apk" ]; then
+            cp public/YuvaShaktiGroup.apk YuvaShaktiGroup.apk
+          fi
+
+      - name: Fallback to Pre-built Signed APK if needed
         if: "!hashFiles('YuvaShaktiGroup.apk')"
         run: |
-          if [ -f "public/YuvaShaktiGroup_v4.5.9.apk" ]; then
-            cp public/YuvaShaktiGroup_v4.5.9.apk YuvaShaktiGroup.apk
+          if [ -f "public/YuvaShaktiGroup.apk" ]; then
+            cp public/YuvaShaktiGroup.apk YuvaShaktiGroup.apk
           fi
 
       - name: Upload APK Artifact

@@ -7,30 +7,38 @@
     <meta name="description" content="युवा शक्ति ग्रुप (भाटी परिवार • कुचेरा) का आधिकारिक परिवार प्रबंधन, बही-खाता (लेखा-जोखा), दैनिक सुविचार एवं अंशदान पोर्टल।" />
     <meta property="og:title" content="युवा शक्ति ग्रुप - परिवार प्रबंधन" />
     <meta property="og:description" content="युवा शक्ति ग्रुप (भाटी परिवार • कुचेरा) का आधिकारिक परिवार प्रबंधन, बही-खाता (लेखा-जोखा), दैनिक सुविचार एवं अंशदान पोर्टल।" />
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="manifest" href="./assets/manifest.json" />
     <meta name="theme-color" content="#0f172a" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <!-- Font Awesome Icons for exact visual fidelity to original Android WebView -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- OneSignal Web Push Notifications -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <!-- OneSignal Web Push Notifications (active on Web & GitHub Pages; safely bypassed on local file:/// Android WebView) -->
     <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "b41490f0-8b2b-4da6-8804-c1f58dea44e9",
-          safari_web_id: "",
-          notifyButton: {
-            enable: false,
-          },
+      if (window.location.protocol.startsWith('http')) {
+        var osScript = document.createElement('script');
+        osScript.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+        osScript.defer = true;
+        document.head.appendChild(osScript);
+
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            var swScope = (window.location.pathname.indexOf('/yuva-shakti-live') !== -1 || window.location.hostname.indexOf('github.io') !== -1) ? '/yuva-shakti-live/' : '/';
+            await OneSignal.init({
+              appId: "b41490f0-8b2b-4da6-8804-c1f58dea44e9",
+              serviceWorkerParam: { scope: swScope },
+              serviceWorkerPath: 'OneSignalSDKWorker.js'
+            });
+          } catch (err) {
+            console.warn("OneSignal Web init notice:", err);
+          }
         });
-      });
+      }
     </script>
-      <script type="module" crossorigin src="./assets/index.js"></script>
-      <link rel="stylesheet" crossorigin href="./assets/index.css">
-    </head>
+    <script defer src="./assets/index.js"></script>
+  </head>
   <body class="bg-[#f2f2f7] text-slate-900 font-['Noto_Sans_Devanagari',_'Inter',_sans-serif] antialiased">
     <div id="root"></div>
   </body>

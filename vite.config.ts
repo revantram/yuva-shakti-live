@@ -30,17 +30,28 @@ export default defineConfig({
       },
     },
     {
-      name: 'github-pages-dual-support',
+      name: 'html-entry-and-webview-transform',
       enforce: 'pre',
       transformIndexHtml: {
         order: 'pre',
         handler(html) {
-          html = html.replace(/<link\s+rel="stylesheet"[^>]*href="[^"]*index\.css"[^>]*>\s*/gi, '');
-          html = html.replace(
-            /<script\s+type="module"[^>]*src="[^"]*index\.js"[^>]*><\/script>/gi,
+          return html.replace(
+            /<script\s+(?:type="module"\s+)?(?:defer\s+)?(?:crossorigin\s+)?src="[^"]*index\.js"[^>]*><\/script>/gi,
             '<script type="module" src="/src/main.tsx"></script>'
           );
-          return html;
+        },
+      },
+    },
+    {
+      name: 'html-post-transform-for-webview',
+      apply: 'build',
+      transformIndexHtml: {
+        order: 'post',
+        handler(html) {
+          return html.replace(
+            /<script\s+type="module"\s+(?:crossorigin\s+)?src="([^"]*assets\/index\.js)"\s*><\/script>/gi,
+            '<script defer src="$1"></script>'
+          );
         },
       },
     },
@@ -49,9 +60,12 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       output: {
+        format: 'iife',
+        name: 'YuvaShaktiApp',
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
         assetFileNames: 'assets/[name].[ext]',
+        inlineDynamicImports: true,
       },
     },
   },

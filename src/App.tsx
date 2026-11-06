@@ -345,6 +345,23 @@ export const App: React.FC = () => {
     );
   };
 
+  // Bell Icon Click: Trigger OneSignal Native Push Slidedown Prompt
+  const handleBellNotificationClick = () => {
+    try {
+      const win = window as any;
+      win.OneSignalDeferred = win.OneSignalDeferred || [];
+      win.OneSignalDeferred.push(async function (OneSignal: any) {
+        if (OneSignal?.Slidedown?.promptPush) {
+          await OneSignal.Slidedown.promptPush();
+        } else if (OneSignal?.Notifications?.requestPermission) {
+          await OneSignal.Notifications.requestPermission();
+        }
+      });
+    } catch (err) {
+      console.warn('OneSignal bell prompt error:', err);
+    }
+  };
+
   // Pending November count
   const pendingNovemberCount = members.filter((m) => (m.category === 'executive' || m.id.startsWith('m-')) && !m.novemberPaid).length;
 
@@ -364,7 +381,7 @@ export const App: React.FC = () => {
               window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
             }
           }}
-          onNotificationClick={() => setIsAdminModalOpen(true)}
+          onNotificationClick={handleBellNotificationClick}
           hasUpdate={Boolean(updateInfo?.hasUpdate)}
           isCompact={isHeaderCompact}
         />
