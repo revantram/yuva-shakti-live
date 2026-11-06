@@ -1,0 +1,14 @@
+{
+  "version": "4.5.9",
+  "versionCode": 459,
+  "releaseDate": "2026-11-06",
+  "minSupportedVersion": "4.0.0",
+  "appName": "युवा शक्ति ग्रुप (भाटी परिवार • कुचेरा)",
+  "packageName": "com.yuvashaktigroup.app",
+  "apkFilename": "YuvaShaktiGroup_v4.5.9.apk",
+  "apkUrl": "https://github.com/revantram/yuva-shakti-app/releases/download/v4.5.9/YuvaShaktiGroup.apk",
+  "latestReleaseUrl": "https://github.com/revantram/yuva-shakti-app/releases/latest/download/YuvaShaktiGroup.apk",
+  "fallbackApkUrl": "/YuvaShaktiGroup_v4.5.9.apk",
+  "releaseNotes": "• नवीनतम बही-खाता एवं 11 कार्यकारिणी सदस्य हिसाब\n• स्वचालित इन-ऐप अपडेट इंजन: GitHub पर नया वर्जन डालते ही सभी सदस्यों के फोन में सीधा अपडेट\n• PhonePe QR कोड (7850983600@ibl) एवं डिजिटल रसीद सुधार\n• पूर्ण ऑफलाइन नेट-फ्री काम करने की सुविधा\n• पावन अमावस्या बैठक एवं श्रद्धांजलि स्मरण",
+  "mandatory": false
+}

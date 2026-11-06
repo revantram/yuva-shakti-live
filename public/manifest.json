@@ -1,0 +1,17 @@
+{
+  "name": "युवा शक्ति ग्रुप - परिवार प्रबंधन",
+  "short_name": "युवा शक्ति",
+  "description": "युवा शक्ति ग्रुप (भाटी परिवार • कुचेरा) का आधिकारिक परिवार प्रबंधन एवं बही-खाता पोर्टल",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/twemoji:triangular-flag.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

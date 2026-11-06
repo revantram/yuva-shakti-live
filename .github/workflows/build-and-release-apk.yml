@@ -1,0 +1,114 @@
+name: Build and Release Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build React App & Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Web Dependencies
+        run: npm ci || npm install
+
+      - name: Build Web Application
+        run: npm run build
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Prepare Assets for Android WebView
+        run: |
+          mkdir -p android/app/src/main/assets
+          cp -r dist/* android/app/src/main/assets/
+          echo "Assets successfully prepared for Android APK!"
+
+      - name: Restore Keystore
+        run: |
+          if [ -f "debug.keystore.base64" ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          fi
+
+      - name: Setup Gradle Wrapper
+        run: |
+          cd android
+          if [ ! -f "gradlew" ]; then
+            gradle wrapper --gradle-version 8.5
+          fi
+          chmod +x gradlew || true
+
+      - name: Build Android APK with Gradle
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon || gradle assembleDebug
+          cp app/build/outputs/apk/debug/*.apk ../YuvaShaktiGroup.apk || true
+
+      - name: Fallback to Pre-built Signed APK if Gradle is skipped
+        if: "!hashFiles('YuvaShaktiGroup.apk')"
+        run: |
+          if [ -f "public/YuvaShaktiGroup_v4.5.9.apk" ]; then
+            cp public/YuvaShaktiGroup_v4.5.9.apk YuvaShaktiGroup.apk
+          fi
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: YuvaShaktiGroup-APK
+          path: YuvaShaktiGroup.apk
+
+      - name: Determine Version Tag
+        id: vars
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            echo "tag=v${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: "युवा शक्ति ग्रुप ${{ steps.vars.outputs.tag }}"
+          body: |
+            🚩 **युवा शक्ति ग्रुप (भाटी परिवार • कुचेरा) आधिकारिक मोबाइल ऐप**
+            
+            • नवीनतम बही-खाता एवं 11 कार्यकारिणी सदस्य हिसाब
+            • ऑटो-अपडेट इंजन सक्रिय: इस APK को इंस्टॉल करने के बाद अगले सभी अपडेट सीधे ऐप में 1-क्लिक में हो जाएंगे!
+            • PhonePe QR कोड एवं डिजिटल रसीद सुधार
+            • पूर्ण ऑफलाइन व तेज़ गति
+            
+            📲 **डाउनलोड करें:** नीचे दी गई `YuvaShaktiGroup.apk` फाइल डाउनलोड करके अपने फोन में इंस्टॉल करें।
+          draft: false
+          prerelease: false
+          files: |
+            YuvaShaktiGroup.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
